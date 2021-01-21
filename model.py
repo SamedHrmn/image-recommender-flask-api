@@ -30,7 +30,7 @@ def get_images(uploaded_image_path):
 
     imgs_path = os.path.abspath("D://Projelerim//ML//image_recommender_flask//static")
 
-    model = vgg16.VGG16(weights='model/vgg16_weights_tf_dim_ordering_tf_kernels.h5', pooling='max')
+    model = vgg16.VGG16(weights='imagenet', pooling='max')
 
     for layer in model.layers:
         layer.trainable = False

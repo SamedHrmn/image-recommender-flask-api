@@ -9,7 +9,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import random
 
 
-def get_images(uploaded_image_path):
+def get_images(uploaded_image_path , recommendation_threshold):
     categories = {
         '0': 'Ayakkabı',
         '1': 'Ruj',
@@ -28,7 +28,8 @@ def get_images(uploaded_image_path):
             if val == categories[v]:
                 return str(v)
 
-    imgs_path = os.path.abspath("D://Projelerim//ML//image_recommender_flask//static")
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    imgs_path = os.path.join(ROOT_DIR,"static")
 
     model = vgg16.VGG16(weights='imagenet', pooling='max')
 
@@ -82,8 +83,9 @@ def get_images(uploaded_image_path):
             features_simV = feat_extractor.predict(processed_simV)
 
             similarity = cosine_similarity(features_resV, features_simV[[index + i]])
+            print("Sim score : ", str(similarity))
 
-            if similarity >= 0.50:
+            if similarity >= recommendation_threshold:
                 print("Girdi")
                 dic = {path: similarity}
                 similar_random_img_list.update(dic)
@@ -95,7 +97,7 @@ def get_images(uploaded_image_path):
     get_similar_random_image(count_similarity=0, i=0, step=2, src_count=0)
     print(similar_random_img_list)
 
-    cos_similarities_df = pd.read_pickle("D:\\Projelerim\\ML\\image_recommender_flask\\dataframe.pkl")
+    cos_similarities_df = pd.read_pickle(os.path.join(ROOT_DIR,"dataframe.pkl"))
     path_prefix = 'D:\\Projelerim\\ML\\deneme\\images\\'
 
     if len(similar_random_img_list) > 0:

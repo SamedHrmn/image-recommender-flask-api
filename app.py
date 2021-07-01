@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, json
+from flask import Flask, render_template, request, json, make_response
 from werkzeug.utils import secure_filename
 import os
-from model import get_images
-from flask import send_file
+from model_optimized import extract_feature_from_uploaded_image
 import base64
 from werkzeug.serving import WSGIRequestHandler
+from PIL import Image
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(ROOT_DIR, "upload")
@@ -26,14 +26,22 @@ def upload_file():
         f = request.files['file']
         filename = secure_filename(f.filename)
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        my_list = get_images(UPLOAD_FOLDER + '\\' + filename, recommendation_threshold=0.50)
-        prefix = 'static//'
-        new_list = sum(my_list, [])
-        new_list = (prefix + i for i in new_list)
+
+        img = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        img = img.convert('RGB')
+        img = img.resize((224, 224))
+        ref_image_path = app.config['UPLOAD_FOLDER'] + "\\" + "reference_image.jpg"
+        img.save(ref_image_path, "JPEG", optimize=True)
+
+        my_list = extract_feature_from_uploaded_image(image_path=ref_image_path)
+
+        for f in os.listdir(UPLOAD_FOLDER):
+            os.remove(os.path.join(UPLOAD_FOLDER, f))
+
+        prefix = 'static//fashion_clear//'
+        new_list = (prefix + i for i in my_list)
         new_list = list(new_list)
-        print("NEWLIST images: :", new_list)
-        print("NEWLIST lenght : " + str(len(new_list)))
-        json_obj = {}
+
         response_img = []
         encoded_img = []
 
@@ -41,16 +49,12 @@ def upload_file():
             with open(str(new_list[i]), "rb") as im:
                 response_img.append(im.read())
 
-        for i in range(0 , len(response_img)):
-
-            print("repsonse_img "+str(response_img[i]))
-
+        for i in range(0, len(response_img)):
             encoded_img.append(base64.b64encode(response_img[i]).decode("ascii"))
-        print("ENCODED LEN: " + str(len(encoded_img)))
-        json_obj["img"] = encoded_img
-        print("Json Obj : ", json_obj)
-        return json.dumps(json_obj)
-        # return render_template('form.html', images=new_list)
+
+        response = make_response(json.dumps(encoded_img))
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
 
 
 WSGIRequestHandler.protocol_version = "HTTP/1.1"

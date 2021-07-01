@@ -32,4 +32,8 @@ def feature_extraction(img_path , model):
   return normalized_features
 ```
 
+<br><br>
+
+![Ekran görüntüsü 2021-07-01 154223](https://user-images.githubusercontent.com/60006881/124126103-fa9b0880-da82-11eb-9616-2ca22742712d.png)
+
 

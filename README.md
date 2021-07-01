@@ -36,8 +36,9 @@ def feature_extraction(img_path , model):
 
 ![Ekran görüntüsü 2021-07-01 154223](https://user-images.githubusercontent.com/60006881/124126103-fa9b0880-da82-11eb-9616-2ca22742712d.png)
 
-<br>
-## License
+
+## Licence
+
 MIT License
 
 Copyright (c) 2021 SamedHrmn
@@ -59,4 +60,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
